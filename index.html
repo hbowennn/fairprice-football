@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1118">
+<title>FairPrice Football</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{color-scheme:dark;--bg:#0b1118;--panel:#121c27;--panel2:#172433;--line:#26384a;--text:#edf4fb;--muted:#9eb0c2;--blue:#7dc4ff;--green:#6ee7b7;--amber:#fbbf24;--red:#f87171}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:84px}
+header{padding:22px 18px 14px;position:sticky;top:0;background:rgba(11,17,24,.96);backdrop-filter:blur(12px);z-index:5;border-bottom:1px solid var(--line)}
+.brand{font-size:12px;letter-spacing:.16em;color:var(--blue);font-weight:800}.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.headrow h1{font-size:24px;margin:4px 0 0;letter-spacing:-.04em}.status{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:5px 8px;border-radius:99px}
+main{max-width:760px;margin:auto;padding:16px;display:grid;gap:14px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:11px 6px;color:var(--muted);font-weight:700}.tab.active{background:#19334a;border-color:#386487;color:#fff}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;min-width:0}.card h2{font-size:16px;margin:0 0 12px}.sub{color:var(--muted);font-size:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.field{display:grid;gap:5px;min-width:0}.field label{font-size:12px;color:var(--muted)}input,select{width:100%;min-width:0;background:#0b131c;border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--text);font:inherit;outline:none}input:focus,select:focus{border-color:var(--blue)}button{font:inherit;cursor:pointer}.btn{border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--panel2);color:var(--text);font-weight:700}.btn.primary{background:#1b5279;border-color:#3479a8}.btn.full{width:100%}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.metric{background:#0d1721;border:1px solid var(--line);border-radius:12px;padding:11px;min-width:0}.metric .label{font-size:11px;color:var(--muted)}.metric .value{font-size:23px;font-weight:800;letter-spacing:-.03em;margin-top:3px}.metric .detail{font-size:11px;color:var(--muted);margin-top:2px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.section-title h2{margin:0}.pill{font-size:11px;color:var(--blue);background:#142b3d;border-radius:99px;padding:5px 8px}.notice{font-size:12px;color:var(--muted);background:#0d1721;border:1px solid var(--line);padding:10px;border-radius:10px}.hidden{display:none!important}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line);white-space:nowrap}th{font-size:11px;color:var(--muted);font-weight:600}.positive{color:var(--green)}.negative{color:var(--red)}.warning{color:var(--amber)}.playerhead{display:flex;justify-content:space-between;align-items:start;gap:12px}.playerhead h2{margin:0;font-size:18px}.smallbtn{background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--muted);padding:6px 8px;font-size:12px}.footer{position:fixed;bottom:0;left:0;right:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(11,17,24,.97);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;z-index:10}.footer span{font-size:11px;color:var(--muted)}.empty{color:var(--muted);font-size:13px;padding:12px 0}.source-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.source-row:last-child{border:0}
+@media(min-width:620px){main{padding:22px}.card{padding:18px}.headrow h1{font-size:28px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">FAIRPRICE / FOOTBALL</div>
+  <div class="headrow"><h1>Player pricing lab</h1><span id="connectionStatus" class="status">DEMO MODE</span></div>
+</header>
+<main>
+  <nav class="tabs" aria-label="Main navigation">
+    <button class="tab active" data-tab="match">Match & odds</button>
+    <button class="tab" data-tab="player">Player model</button>
+    <button class="tab" data-tab="prices">Price finder</button>
+  </nav>
+
+  <section id="tab-match" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Match centre</h2><span class="pill">90 minutes</span></div>
+      <div class="grid2">
+        <div class="field"><label for="homeTeam">Home team</label><input id="homeTeam" value="Arsenal" /></div>
+        <div class="field"><label for="awayTeam">Away team</label><input id="awayTeam" value="Chelsea" /></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="sub" style="margin-bottom:8px">BETFAIR EXCHANGE — BACK PRICES (SAMPLE ONLY)</div>
+      <div class="grid3">
+        <div class="field"><label for="homeOdds">Home</label><input id="homeOdds" type="number" step=".01" min="1.01" value="2.10"></div>
+        <div class="field"><label for="drawOdds">Draw</label><input id="drawOdds" type="number" step=".01" min="1.01" value="3.60"></div>
+        <div class="field"><label for="awayOdds">Away</label><input id="awayOdds" type="number" step=".01" min="1.01" value="3.80"></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="grid2">
+        <div class="field"><label for="overOdds">Over 2.5 goals</label><input id="overOdds" type="number" step=".01" min="1.01" value="1.85"></div>
+        <div class="field"><label for="underOdds">Under 2.5 goals</label><input id="underOdds" type="number" step=".01" min="1.01" value="2.02"></div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="btnrow"><button id="calcMatch" class="btn primary">Calculate match baseline</button><button id="refreshOdds" class="btn">Refresh API</button></div>
+      <div style="height:12px"></div>
+      <div id="matchOutput" class="grid3"></div>
+      <p class="notice" style="margin-bottom:0">Sample prices are illustrative and are not live Betfair odds. API refresh works only after you deploy the backend and configure your own Betfair credentials.</p>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>Market connection</h2><span id="apiPill" class="pill">Not connected</span></div>
+      <div class="field"><label for="apiBase">Your deployed backend URL</label><input id="apiBase" type="url" placeholder="https://your-service.example.com"></div>
+      <div style="height:10px"></div>
+      <div class="field"><label for="eventSearch">Search fixture (when API connected)</label><input id="eventSearch" placeholder="e.g. Arsenal v Chelsea"></div>
+      <div style="height:10px"></div>
+      <div class="btnrow"><button id="loadEvents" class="btn">Load football events</button><button id="testApi" class="btn">Test connection</button></div>
+      <div id="eventList" style="margin-top:10px"></div>
+      <div class="notice" style="margin-top:12px">For safety, this page does not store Betfair passwords or API session tokens. Configure credentials as server-side secrets in your backend host.</div>
+    </div>
+  </section>
+
+  <section id="tab-player" class="view hidden">
+    <div class="card">
+      <div class="section-title"><h2>Player inputs</h2><span class="pill">Manual v1</span></div>
+      <div class="grid2">
+        <div class="field"><label for="playerName">Player name</label><input id="playerName" value="Example Striker"></div>
+        <div class="field"><label for="playerTeam">Team</label><input id="playerTeam" value="Arsenal"></div>
+        <div class="field"><label for="minutes">Expected minutes</label><input id="minutes" type="number" min="1" max="120" value="80"></div>
+        <div class="field"><label for="apps">Appearances in sample</label><input id="apps" type="number" min="1" value="10"></div>
+        <div class="field"><label for="starts">Starts in sample</label><input id="starts" type="number" min="0" value="8"></div>
+        <div class="field"><label for="sampleMinutes">Minutes in sample</label><input id="sampleMinutes" type="number" min="1" value="720"></div>
+        <div class="field"><label for="goals">Goals in sample</label><input id="goals" type="number" min="0" value="4"></div>
+        <div class="field"><label for="shots">Total shots in sample</label><input id="shots" type="number" min="0" value="26"></div>
+        <div class="field"><label for="sot">Shots on target in sample</label><input id="sot" type="number" min="0" value="11"></div>
+        <div class="field"><label for="penaltyRole">Penalty taker?</label><select id="penaltyRole"><option value="no">No / unknown</option><option value="yes">Yes</option></select></div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="btnrow"><button id="calculatePlayer" class="btn primary">Calculate fair prices</button><button id="savePlayer" class="btn">Save player</button><button id="resetPlayer" class="btn">Reset inputs</button></div>
+      <div style="height:12px"></div><div id="playerOutput"></div>
+      <p class="notice" style="margin-bottom:0">This is a transparent baseline model. It does not yet adjust for opponent quality, position, penalties taken historically, starting-line-up news or data uncertainty. A small sample can be misleading.</p>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>Saved players</h2><button id="exportPlayers" class="smallbtn">Export JSON</button></div>
+      <div id="savedPlayers" class="empty">No saved players yet.</div>
+      <div style="height:10px"></div>
+      <label class="btn" style="display:inline-block">Import JSON<input id="importPlayers" type="file" accept="application/json" class="hidden"></label>
+    </div>
+  </section>
+
+  <section id="tab-prices" class="view hidden">
+    <div class="card">
+      <div class="section-title"><h2>Exchange price comparison</h2><span class="pill">Read-only</span></div>
+      <p class="sub">Enter available player-market odds manually until the API backend is connected and a supported market is available.</p>
+      <div class="grid2">
+        <div class="field"><label for="marketType">Player market</label><select id="marketType"><option value="anytime">Anytime goalscorer</option><option value="twoGoals">2+ goals</option><option value="shots2">2+ shots</option><option value="shots3">3+ shots</option><option value="sot1">1+ shot on target</option><option value="sot2">2+ shots on target</option></select></div>
+        <div class="field"><label for="exchangeOdds">Exchange back odds</label><input id="exchangeOdds" type="number" min="1.01" step=".01" value="3.20"></div>
+        <div class="field"><label for="commission">Commission on net winnings (%)</label><input id="commission" type="number" min="0" max="100" step=".1" value="5"></div>
+        <div class="field"><label for="stake">Example stake (£)</label><input id="stake" type="number" min=".01" step=".01" value="10"></div>
+      </div>
+      <div style="height:12px"></div><button id="comparePrice" class="btn primary full">Compare price</button>
+      <div id="priceOutput" style="margin-top:12px"></div>
+      <p class="notice" style="margin-bottom:0">The commission-adjusted calculation assumes commission is charged on net market winnings and that the displayed price is available for your stake. Actual market rules and liquidity may differ.</p>
+    </div>
+    <div class="card">
+      <h2>Model notes</h2>
+      <div class="source-row"><span>Goals baseline</span><span class="sub">Poisson approximation</span></div>
+      <div class="source-row"><span>Shots baseline</span><span class="sub">Poisson approximation</span></div>
+      <div class="source-row"><span>Player data source</span><span class="sub">Manual input</span></div>
+      <div class="source-row"><span>Live betting</span><span class="sub">Not supported</span></div>
+    </div>
+  </section>
+</main>
+<div class="footer"><span>MODEL ESTIMATES · NOT GUARANTEED</span><span id="lastUpdated">No API refresh yet</span></div>
+<script src="app.js"></script>
+</body>
+</html>

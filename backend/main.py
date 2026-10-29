@@ -23,34 +23,91 @@ BETFAIR_API = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 def configured() -> bool:
     return bool(BETFAIR_APP_KEY and BETFAIR_SESSION_TOKEN)
 
+
 async def betfair_rpc(method: str, params: dict[str, Any]) -> Any:
     if not configured():
         raise HTTPException(
             status_code=503,
-            detail="Betfair credentials are not configured. Add BETFAIR_APP_KEY and BETFAIR_SESSION_TOKEN as backend secrets."
+            detail="Betfair credentials are not configured."
         )
-    payload = [{"jsonrpc": "2.0", "method": f"SportsAPING/v1.0/{method}", "params": params, "id": 1}]
+
+    # Send one JSON-RPC request as an object.
+    payload = {
+        "jsonrpc": "2.0",
+        "method": f"SportsAPING/v1.0/{method}",
+        "params": params,
+        "id": 1,
+    }
+
     headers = {
-        "X-Application": BETFAIR_APP_KEY,
-        "X-Authentication": BETFAIR_SESSION_TOKEN,
+        "X-Application": BETFAIR_APP_KEY.strip(),
+        "X-Authentication": BETFAIR_SESSION_TOKEN.strip(),
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
+
     try:
         async with httpx.AsyncClient(timeout=18) as client:
-            response = await client.post(BETFAIR_API, headers=headers, json=payload)
-        if response.status_code in (401, 403):
-            raise HTTPException(status_code=502, detail="Betfair rejected the session or application key. Refresh the session token and check API access.")
-        response.raise_for_status()
-        body = response.json()
+            response = await client.post(
+                BETFAIR_API,
+                headers=headers,
+                json=payload,
+            )
+
+        try:
+            body = response.json()
+        except ValueError:
+            body = {"response_text": response.text[:500]}
+
+        # Return diagnostic information without exposing credentials.
+        if response.status_code >= 400:
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    "stage": "Betfair HTTP response",
+                    "http_status": response.status_code,
+                    "betfair_response": body,
+                },
+            )
+
+        item = body[0] if isinstance(body, list) and body else body
+
+        if not isinstance(item, dict):
+            raise HTTPException(
+                status_code=502,
+                detail="Unexpected response format from Betfair."
+            )
+
+        if item.get("error"):
+            error = item["error"]
+            error_data = error.get("data", {})
+            api_exception = (
+                error_data.get("APINGException", {})
+                if isinstance(error_data, dict)
+                else {}
+            )
+
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    "stage": "Betfair API error",
+                    "error_code": api_exception.get("errorCode", ""),
+                    "error_message": api_exception.get(
+                        "errorDetails",
+                        error.get("message", "Unknown Betfair error"),
+                    ),
+                },
+            )
+
+        return item.get("result", [])
+
     except HTTPException:
         raise
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=f"Could not reach Betfair API: {type(exc).__name__}")
-    item = body[0] if isinstance(body, list) and body else {}
-    if item.get("error"):
-        raise HTTPException(status_code=502, detail="Betfair API returned an error. Check the configured session, key and market request.")
-    return item.get("result", [])
+        raise HTTPException(
+            status_code=502,
+            detail=f"Could not reach Betfair API: {type(exc).__name__}",
+        )
 
 @app.get("/health")
 async def health():
